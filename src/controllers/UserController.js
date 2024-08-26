@@ -31,7 +31,7 @@ export default {
             user
          })  
         } catch (error) {
-            return response.json({ message: error.message })
+            return resp.json({ message: error.message })
         }
     },
     async findAllUser(req,resp){
@@ -52,7 +52,7 @@ export default {
             delete user.password
             return resp.json(user)
         } catch (error) {
-            return response.json({ message: error.message })
+            return resp.json({ message: error.message })
         }
     }
 }

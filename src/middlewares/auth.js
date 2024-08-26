@@ -12,6 +12,7 @@ export default function auth(req, resp, next){
          const data = jwt.verify(token,'698dc19d489c4e4db73e28a713eab07b')
         const {id } = data;
         req.userId = id;
+        next()
         } catch (error) {
         return resp.json({message:"Não autorizado"},401)
     }
