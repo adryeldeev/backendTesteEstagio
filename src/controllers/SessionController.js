@@ -1,43 +1,50 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
+import { compare } from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-import { compare } from "bcrypt";
-import jwt from 'jsonwebtoken'
+const prisma = new PrismaClient();
 
-const prisma = new PrismaClient()
+const createSession = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
 
-export default {
-    async createSession ( req,res)
-{
-try {
-    const { email, password} = req.body;
-    const user = await prisma.user.findUnique({where: {email}})
-    if(!user){
-        return  res.json({
-            error:true,
-            message:'Usuário ou senha incorretos'
-        })
-    }
-    const checkPassowrd = await compare(password,user.password)
-
-    if(!checkPassowrd){
-        return res.json({
-            error:false,
-            message:"Usuário ou senha incorretos"
-        })
+    if (!user) {
+      return res.status(401).json({
+        error: true,
+        message: 'Usuário ou senha incorretos',
+      });
     }
 
-   const token = jwt.sign({where:user.id}, "698dc19d489c4e4db73e28a713eab07b",{
-    expiresIn:'1d'
-   })
-   delete user.password
+    const checkPassword = await compare(password, user.password);
 
-   return res.json({
-    error:true,
-    message:"Login efetuado com sucesso. Aguarde...!",
-    user, 
-    token 
-   })
-} catch (error) {
-return response.json({ message: error.message })
-}
-}}
+    if (!checkPassword) {
+      return res.status(401).json({
+        error: true,
+        message: 'Usuário ou senha incorretos',
+      });
+    }
+
+    const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: '15m',
+    });
+
+    const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, {
+      expiresIn: '7d',
+    });
+
+    delete user.password;
+
+    return res.json({
+      error: false,
+      message: 'Login efetuado com sucesso. Aguarde...',
+      user,
+      accessToken,
+      refreshToken,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
+};
+
+export default { createSession };

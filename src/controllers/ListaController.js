@@ -3,58 +3,67 @@ import { PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient()
 
 export default {
-    async createTask (req,resp){
-        const { titulo, descricao, userId} = req.body;
-
+    
+    async createTask(req, resp) {
+        const { titulo, descricao } = req.body;
+        const userId =  req.user.id;  
+    
+        if (!userId) {
+            return resp.status(400).json({ error: true, message: 'Usuário não autenticado' });
+        }
+    
         try {
-            let task = await prisma.task.findFirst({where:{titulo, userId}})
-            if(task){
+            let task = await prisma.task.findFirst({
+                where: { titulo, userId }
+            });
+    
+            if (task) {
                 return resp.json({
-                    error:true,
-                    message:'Erro, titulo já existe!',
-
-                })
+                    error: true,
+                    message: 'Erro, titulo já existe!',
+                });
             }
-            task = prisma.task.create({
-                data:{
+    
+            task = await prisma.task.create({
+                data: {
                     titulo,
                     descricao,
-                    userId
+                    userId  
                 }
-            })
+            });
+    
             return resp.json({
-                error:false,
-                message:"Tarefa criada com súcesso",
+                error: false,
+                message: "Tarefa criada com sucesso",
                 task
-                
-            })
+            });
         } catch (error) {
-            return resp.json({ message: error.message })
-            
+            return resp.json({ message: error.message });
         }
+    },    
 
-    },
-    async listTaskAll (req,resp){
-        const { userId} = req.params
+    async listTaskAll(req, resp) {
+        const userId = req.user.id;
+
         try {
-            let task = await prisma.task.findMany({
-                where:{userId}
-            })
+            let tasks = await prisma.task.findMany({
+                where: { userId }
+            });
 
-            if(!task){
+            if (tasks.length === 0) {
                 return resp.json({
-                    error:true,
-                    message:'Não há tarefas criada'
-                })
+                    error: true,
+                    message: 'Não há tarefas criadas'
+                });
             }
 
-            return  resp.json({
-                error:false,
-                message:'Tarefas listada com sucesso',
-                task
-            })
+            return resp.json({
+                error: false,
+                message: 'Tarefas listadas com sucesso',
+                tasks // Retorna todas as tarefas do usuário autenticado
+            });
         } catch (error) {
-            return resp.json({ message: error.message })
+            return resp.json({ message: error.message });
         }
     },
 async findListTask (req,resp){
