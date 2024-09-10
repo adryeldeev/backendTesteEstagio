@@ -14,10 +14,10 @@ const refreshSession = async (req, res) => {
   }
 
   try {
-    // Verifique o refresh token
-    const decoded = await verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    
+    const decoded = await verifyToken(refreshToken, `process.env.REFRESH_TOKEN_SECRET`);
 
-    // Obtenha o usuário associado ao token
+    
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
 
     if (!user) {
