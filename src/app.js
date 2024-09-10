@@ -9,11 +9,12 @@ const app = express();
 
 
 app.use(cors({
-  origin: ['*'],
+  origin: ['https://front-end-teste-estagio-a6bs9y8x5-adryeldeevs-projects.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+}))
+
 
 app.use(express.json());
 
