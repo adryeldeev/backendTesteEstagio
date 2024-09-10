@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default function auth(req, res, next) {
     const { authorization } = req.headers;
@@ -15,7 +16,7 @@ export default function auth(req, res, next) {
     try {
 
         const data = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        req.user = { id: data.id }; // Adiciona o ID do usuário ao request
+        req.user = { id: data.id }; 
         next();
     } catch (error) {
      

@@ -60,7 +60,7 @@ export default {
             return resp.json({
                 error: false,
                 message: 'Tarefas listadas com sucesso',
-                tasks // Retorna todas as tarefas do usuário autenticado
+                tasks 
             });
         } catch (error) {
             return resp.json({ message: error.message });
