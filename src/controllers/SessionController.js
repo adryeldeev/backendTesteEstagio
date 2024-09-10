@@ -3,6 +3,7 @@ import { compare } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
+
 const prisma = new PrismaClient();
 
 const createSession = async (req, res) => {
@@ -26,11 +27,11 @@ const createSession = async (req, res) => {
       });
     }
 
-    const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, {
+    const accessToken = jwt.sign({ id: user.id },  `process.env.ACCESS_TOKEN__SECRET`, {
       expiresIn: '15m',
     });
 
-    const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, {
+    const refreshToken = jwt.sign({ id: user.id },  `process.env.ACCESS_TOKEN__SECRET`, {
       expiresIn: '7d',
     });
 

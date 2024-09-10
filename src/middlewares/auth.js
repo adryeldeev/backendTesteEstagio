@@ -16,6 +16,7 @@ export default function auth(req, res, next) {
     try {
 
         const data = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+       
         req.user = { id: data.id }; 
         next();
     } catch (error) {
